@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from perceptron import Perceptron
 
+
 datos = []
 etiquetas = []
 etiquetas_mapeo = {"Iris-setosa": 0, "Iris-versicolor": 1, "Iris-virginica": 1}
