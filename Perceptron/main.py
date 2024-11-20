@@ -1,54 +1,89 @@
 import numpy as np
 import csv
+import matplotlib.pyplot as plt
 
-class Perceptron:
-    def __init__(self, n):
-        self.pesos = np.zeros(n)
-        self.n = n
+# Paso 1: Leer y preparar los datos
+features = []
+labels = []
 
-    def propagacion(self, entradas):
-        suma = np.dot(self.pesos, entradas)
-        self.salida = 1 if suma > 9.5 else 0
-        self.entradas = entradas
-
-    def actualizacion_coef(self, alfa, salidad):
-        error = salidad - self.salida
-        for i in range(self.n):
-            self.pesos[i] += alfa * error * self.entradas[i]
-
-# Carga de datos
-caracteristicas = []
-etiquetas = []
-
-with open("iris.csv", newline="") as File:
-    reader = csv.reader(File)
+with open('iris.csv', 'r') as file:
+    reader = csv.reader(file)
+    # next(reader)  # Descomenta esta línea si el CSV tiene un encabezado
     for row in reader:
-        # Asumiendo que las columnas están en el orden correcto
+        if not row:
+            continue  # Saltar líneas vacías
         petal_length = float(row[2])
         petal_width = float(row[3])
-        clase = row[4]
+        species = row[4]
 
-        # Convertir etiquetas a valores numéricos
-        if clase == 'Iris-setosa':
-            etiqueta = 0
+        feature_vector = [1.0, petal_length, petal_width]
+        features.append(feature_vector)
+
+        if species == 'Iris-setosa':
+            labels.append(1)
         else:
-            etiqueta = 1  # Puedes ajustar esto según tu necesidad
+            labels.append(0)
 
-        # Añadir el sesgo (x = 1)
-        caracteristicas.append([1, petal_length, petal_width])
-        etiquetas.append(etiqueta)
+features = np.array(features)
+labels = np.array(labels)
 
-# Convertir a arrays de NumPy
-caracteristicas = np.array(caracteristicas)
-etiquetas = np.array(etiquetas)
+# Paso 2: Barajar los datos
+dataset = list(zip(features, labels))
+np.random.shuffle(dataset)
+features, labels = zip(*dataset)
+features = np.array(features)
+labels = np.array(labels)
 
-# Entrenamiento del perceptrón
-perceptron = Perceptron(3)
-alfa = 0.1  # Tasa de aprendizaje
+# Paso 3: Inicializar los pesos del perceptrón aleatoriamente
+np.random.seed(42)  # Fijar la semilla para reproducibilidad
+weights = np.random.uniform(-0.5, 0.5, 3)
 
-for epoch in range(100):  # Número de iteraciones
-    for entradas, salida_real in zip(caracteristicas, etiquetas):
-        perceptron.propagacion(entradas)
-        perceptron.actualizacion_coef(alfa, salida_real)
+# Paso 4: Definir la función de activación
+def activation_function(f):
+    if f > 0.6:
+        return 1
+    else:
+        return 0
 
-print("Pesos entrenados:", perceptron.pesos)
+# Paso 5: Implementar el algoritmo de entrenamiento del perceptrón
+learning_rate = 0.1
+epochs = 1000
+errors = []
+
+for epoch in range(epochs):
+    total_error = 0
+    for i in range(len(features)):
+        input_vector = features[i]
+        target = labels[i]
+        f = np.dot(weights, input_vector)
+        output = activation_function(f)
+        error = target - output
+        total_error += abs(error)
+        weights += learning_rate * error * input_vector
+    errors.append(total_error)
+    # Opcional: Detener el entrenamiento si no hay errores
+    if total_error == 0:
+        break
+
+# Paso 6: Mostrar los pesos resultantes
+print("Pesos entrenados:")
+print(f"w0 (sesgo): {weights[0]:.2f}")
+print(f"w1: {weights[1]:.2f}")
+print(f"w2: {weights[2]:.2f}")
+
+# Paso 7: Mostrar el número de épocas ejecutadas
+print(f"\nNúmero de épocas ejecutadas: {epoch + 1}")
+
+# Paso 8: Graficar los errores durante el entrenamiento
+# plt.plot(errors)
+# plt.xlabel('Épocas')
+# plt.ylabel('Errores')
+# plt.title('Errores durante el entrenamiento')
+# plt.show()
+
+# Paso 9: Opciones dadas
+print("\nOpciones dadas:")
+print("a. w0 = 1.2, w1 = -0.15, w2 = -0.47")
+print("b. w0 = 9.5, w1 = -1.21, w2 = -2.48")
+print("c. w0 = 6.2, w1 = -1.54, w2 = -2.18")
+print("d. w0 = 12, w1 = -1.5, w2 = -4.7")
