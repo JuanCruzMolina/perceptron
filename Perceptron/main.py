@@ -47,7 +47,7 @@ def activation_function(f):
 
 # Paso 5: Implementar el algoritmo de entrenamiento del perceptrón
 learning_rate = 0.1
-epochs = 1000
+epochs = 50
 errors = []
 
 for epoch in range(epochs):
@@ -62,8 +62,8 @@ for epoch in range(epochs):
         weights += learning_rate * error * input_vector
     errors.append(total_error)
     # Opcional: Detener el entrenamiento si no hay errores
-    if total_error == 0:
-        break
+    # if total_error == 0:
+    #     break
 
 # Paso 6: Mostrar los pesos resultantes
 print("Pesos entrenados:")
